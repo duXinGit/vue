@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{message}}
+        <div v-bind:id="dynamicId"></div>
+        <button v-bind:disabled="isButtonDisabled">Button</button>
+        <div>{{ number + 1 }}</div>
+        <div>{{ ok ? 'YES' : 'NO' }}</div>
+        <div>{{ message.split('').reverse().join('') }}</div>
+        <p v-if="seen">现在你看到我了</p>
+        <div>
+            <a v-bind:href="url">v-bind:href</a>
+        </div>
+        <div>
+            <a :href="url">v-bind:href 缩写为 :href</a>
+        </div>
+        <div v-on:click="clickThis">v-on:</div>
+        <div v-on:click="clickThis">event.stopPropagation()<span v-on:click.stop="clickStop">v-on:</span></div>
+        <div @click="clickThis">v-on:click 缩写为 @click</div>
+        <p>Original message: "{{ message2 }}"</p>
+        <p>Computed reversed message: "{{ reversedMessage2 }}"</p>
+    </div>
+    <div id="vm1">
+        {{ fullName }}
+    </div>
+    <div id="vm2">
+        {{ fullName }}
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello vue!',
+                dynamicId: 'ia',
+                isButtonDisabled: 'disabled',
+                number: 1,
+                ok: '',
+                seen: false,
+                url: 'http://www.baidu.com',
+                message2: '123456'
+            },
+            created: function () {
+                console.log(this.message);
+            },
+            methods: {
+                clickThis: function () {
+                    alert(1);
+                },
+                clickStop: function () {
+                    return;
+                }
+            },
+            computed: {
+                reversedMessage2: function () {
+                    return this.message2.split('').reverse().join('');
+                }
+            }
+        });
+
+        var vm1 = new Vue({
+            el: '#vm1',
+            data: {
+                firstName: 'Foo',
+                lastName: 'Bar'
+            },
+            computed: {
+                fullName: function () {
+                    return this.firstName + ' ' + this.lastName;
+                }
+            }
+        });
+
+        var vm2 = new Vue({
+            el: '#vm2',
+            data: {
+                firstName: 'Foo',
+                lastName: 'Bar'
+            },
+            computed: {
+                fullName: {
+                    get: function () {
+                        return this.firstName + ' ' + this.lastName;
+                    },
+                    set: function (newValue) {
+                        var names = newValue.split(' ');
+                        this.firstName = names[0];
+                        this.lastName = names[names.length - 1];
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
