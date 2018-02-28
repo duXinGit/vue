@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
+    <!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -25,12 +29,34 @@
         <div @click="clickThis">v-on:click 缩写为 @click</div>
         <p>Original message: "{{ message2 }}"</p>
         <p>Computed reversed message: "{{ reversedMessage2 }}"</p>
+
+        <div :class="'active text-danger'">:class传入字符串</div>
+        <div class="cls" :class="'active text-danger'">:class传入字符串-原本带有class属性的</div>
+
+        <div :class="{active:isActive, 'text-danger': hasError}">:class传入对象-方式1</div>
+        <div class="cls" :class="{active:isActive, 'text-danger': hasError}">:class传入对象-方式1-原本带有class属性的</div>
+        <div :class="classObj">:class传入对象-方式2</div>
+        <div class="cls" :class="classObj">:class传入对象-方式2-原本带有class属性的</div>
+
+        <div :class="[activeClass, errorClass]">:class传入数组</div>
+        <div class="cls" :class="[activeClass, errorClass]">:class传入数组-原本带有class属性的</div>
+        <div :class="[isActive ? activeClass : '', errorClass]">:class传入数组-内含表达式</div>
+        <div class="cls" :class="[isActive ? activeClass : '', errorClass]">:class传入数组-内含表达式-原本带有class属性的</div>
+
+        <div :class="[{active:isActive}, errorClass]">:class传入数组-数组内出入对象</div>
     </div>
     <div id="vm1">
         {{ fullName }}
     </div>
     <div id="vm2">
         {{ fullName }}
+    </div>
+    <div id="watch-example">
+        <p>
+            Ask a yes/no question:
+            <input v-model="question" />
+        </p>
+        <p>{{ answer }}<img :src="imgUrl" /></p>
     </div>
     <script>
         var vm = new Vue({
@@ -43,7 +69,15 @@
                 ok: '',
                 seen: false,
                 url: 'http://www.baidu.com',
-                message2: '123456'
+                message2: '123456',
+                isActive: true,
+                hasError: true,
+                classObj: {
+                    active: true,
+                    'text-danger': true
+                },
+                activeClass: 'active',
+                errorClass: 'text-danger'
             },
             created: function () {
                 console.log(this.message);
@@ -93,6 +127,40 @@
                         this.lastName = names[names.length - 1];
                     }
                 }
+            }
+        });
+
+        var watchExampleVM = new Vue({
+            el: '#watch-example',
+            data: {
+                question: '',
+                imgUrl: '',
+                answer: 'I cannot give you an answer until you ask a question!'
+            },
+            watch: {
+                question: function (newQuestion, oldQuestion) {
+                    this.answer = 'Waiting for you to stop typing...';
+                    this.getAnswer();
+                }
+            },
+            methods: {
+                getAnswer: _.debounce(function(){
+                    if(this.question.indexOf('?') === -1){
+                        this.answer = 'Questions usually contain a question mark. ;-)';
+                        this.imgUrl = '';
+                        return
+                    }
+                    this.answer = 'Thinking...';
+                    var vm3 = this;
+                    axios.get('https://yesno.wtf/api')
+                        .then(function (response) {
+                            console.log(response)
+                            vm3.answer = _.capitalize(response.data.answer);
+                            vm3.imgUrl = response.data.image;
+                        }).catch(function (error) {
+                            vm3.answer = 'Error! Could not reach the API. ' + error
+                        })
+                }, 500)// 这是我们为判定用户停止输入等待的毫秒数
             }
         });
     </script>
