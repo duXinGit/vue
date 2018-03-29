@@ -58,6 +58,82 @@
         </p>
         <p>{{ answer }}<img :src="imgUrl" /></p>
     </div>
+
+    <div id="vm3">
+        <h1 v-if="ok">v-if</h1>
+        <h1 v-else>v-else</h1>
+
+        <h1 v-show="ok">v-show</h1>
+    </div>
+
+    <div id="vm4">
+        <h1 v-if="type === 'A'">v-if</h1>
+        <h1 v-else-if="type === 'B'">v-else-if</h1>
+        <h1 v-else>v-else</h1>
+    </div>
+
+    <div>
+        v-for
+        <ul id="example-1">
+            <li v-for="item in items">
+                {{item.message}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        v-for
+        <ul id="example-2">
+            <li v-for="(item, index) in items">
+                {{parentMessage}} - {{index}} - {{item.message}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        v-for-object
+        <ul id="v-for-object">
+            <li v-for="value in object">
+                {{value}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        v-for-object
+        <ul id="v-for-object-">
+            <li v-for="(value, key) in object">
+                {{key}}:{{value}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        v-for-object
+        <ul id="v-for-object--">
+            <li v-for="(value, key, index) in object">
+                {{index}}.{{key}}:{{value}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        filter
+        <ul id="computed-">
+            <li v-for="n in evenNumbers">
+                {{n}}
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        filter
+        <ul id="methods-">
+            <li v-for="n in even(numbers)">
+                {{n}}
+            </li>
+        </ul>
+    </div>
     <script>
         var vm = new Vue({
             el: '#app',
@@ -161,6 +237,103 @@
                             vm3.answer = 'Error! Could not reach the API. ' + error
                         })
                 }, 500)// 这是我们为判定用户停止输入等待的毫秒数
+            }
+        });
+
+        var vm3 = new Vue({
+            el: '#vm3',
+            data: {
+                ok: true
+            }
+        });
+
+        var vm4 = new Vue({
+            el: '#vm4',
+            data: {
+                type: 'A'
+            }
+        });
+
+        var vm5 = new Vue({
+            el: '#example-1',
+            data: {
+                items: [
+                    { message: 'Foo' },
+                    { message: 'Bar' }
+                ]
+            }
+        });
+
+        var vm6 = new Vue({
+            el: '#example-2',
+            data: {
+                parentMessage: 'Parent',
+                items: [
+                    { message: 'Foo' },
+                    { message: 'Bar' }
+                ]
+            }
+        });
+
+        var vm7 = new Vue({
+            el: '#v-for-object',
+            data: {
+                object: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    age: 30
+                }
+            }
+        });
+
+        var vm8 = new Vue({
+            el: '#v-for-object-',
+            data: {
+                object: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    age: 30
+                }
+            }
+        });
+
+        var vm9 = new Vue({
+            el: '#v-for-object--',
+            data: {
+                object: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    age: 30
+                }
+            }
+        });
+
+        var vm10 = new Vue({
+            el: '#computed-',
+            data: {
+                numbers: [ 1, 2, 3, 4, 5 ]
+            },
+            computed: {
+                evenNumbers: function(){
+                    return this.numbers.filter(function(number){
+                        return number % 2 === 0;
+                    });
+                }
+            }
+        });
+
+        var vm11 = new Vue({
+            el: '#methods-',
+            data: {
+                numbers: [ 1, 2, 3, 4, 5 ]
+            },
+            methods: {
+                even: function (ns) {
+
+                    return ns.filter(function(n){
+                        return n % 2 === 0;
+                    });
+                }
             }
         });
     </script>
